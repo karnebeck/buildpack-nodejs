@@ -13,8 +13,8 @@ build_dir=$1
 cache_dir=$2
 env_dir=$3
 bp_dir=$(cd $(dirname $0); cd ..; pwd)
-heroku_dir=$build_dir/.heroku
-mkdir -p $heroku_dir/node
+paasprovider_dir=$build_dir/.paasprovider
+mkdir -p $paasprovider_dir/node
 warnings=$(mktemp)
 
 # Load dependencies

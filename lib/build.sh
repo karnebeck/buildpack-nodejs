@@ -110,18 +110,18 @@ install_node() {
   # Resolve non-specific node versions using semver.herokuapp.com
   if ! [[ "$node_engine" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     info "Resolving node version ${node_engine:-(latest stable)} via semver.io..."
-    node_engine=$(curl --silent --get --data-urlencode "range=${node_engine}" https://semver.herokuapp.com/node/resolve)
+    node_engine=$(curl --silent --get --data-urlencode "range=${node_engine}" https://semver.io/node/resolve)
   fi
 
   # Download node from Heroku's S3 mirror of nodejs.org/dist
   info "Downloading and installing node $node_engine..."
-  node_url="http://s3pository.heroku.com/node/v$node_engine/node-v$node_engine-linux-x64.tar.gz"
+  node_url="http://nodejs.org/dist/v$node_engine/node-v$node_engine-linux-x64.tar.gz"
   curl $node_url -s -o - | tar xzf - -C /tmp
 
   # Move node (and npm) into .heroku/node and make them executable
-  mv /tmp/node-v$node_engine-linux-x64/* $heroku_dir/node
-  chmod +x $heroku_dir/node/bin/*
-  PATH=$heroku_dir/node/bin:$PATH
+  mv /tmp/node-v$node_engine-linux-x64/* $paasprovider_dir/node
+  chmod +x $paasprovider_dir/node/bin/*
+  PATH=$paasprovider_dir/node/bin:$PATH
 }
 
 install_iojs() {
@@ -130,7 +130,7 @@ install_iojs() {
   # Resolve non-specific iojs versions using semver.herokuapp.com
   if ! [[ "$iojs_engine" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     info "Resolving iojs version ${iojs_engine:-(latest stable)} via semver.io..."
-    iojs_engine=$(curl --silent --get --data-urlencode "range=${iojs_engine}" https://semver.herokuapp.com/iojs/resolve)
+    iojs_engine=$(curl --silent --get --data-urlencode "range=${iojs_engine}" https://semver.io/iojs/resolve)
   fi
 
   # TODO: point at /dist once that's available
@@ -139,9 +139,9 @@ install_iojs() {
   curl $download_url -s -o - | tar xzf - -C /tmp
 
   # Move iojs/node (and npm) binaries into .heroku/node and make them executable
-  mv /tmp/iojs-v$iojs_engine-linux-x64/* $heroku_dir/node
-  chmod +x $heroku_dir/node/bin/*
-  PATH=$heroku_dir/node/bin:$PATH
+  mv /tmp/iojs-v$iojs_engine-linux-x64/* $paasprovider_dir/node
+  chmod +x $paasprovider_dir/node/bin/*
+  PATH=$paasprovider_dir/node/bin:$PATH
 }
 
 install_npm() {
@@ -149,7 +149,7 @@ install_npm() {
   if [ "$npm_engine" != "" ]; then
     if ! [[ "$npm_engine" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
       info "Resolving npm version ${npm_engine} via semver.io..."
-      npm_engine=$(curl --silent --get --data-urlencode "range=${npm_engine}" https://semver.herokuapp.com/npm/resolve)
+      npm_engine=$(curl --silent --get --data-urlencode "range=${npm_engine}" https://semver.io/npm/resolve)
     fi
     if [[ `npm --version` == "$npm_engine" ]]; then
       info "npm `npm --version` already installed with node"
