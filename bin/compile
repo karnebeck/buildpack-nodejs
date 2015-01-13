@@ -8,11 +8,14 @@ set -o pipefail   # don't ignore exit codes when piping output
 build_dir=$1
 cache_dir=$2
 env_dir=$3
-
 bp_dir=$(cd $(dirname $0); cd ..; pwd)
 
 # Load some convenience functions like status(), echo(), and indent()
 source $bp_dir/bin/common.sh
+
+# Fix leak
+status "Resetting git environment"
+unset GIT_DIR
 
 # Output npm debug info on error
 trap cat_npm_debug_log ERR
@@ -65,7 +68,7 @@ elif test -d $cache_dir/node/node_modules; then
   cp -r $cache_dir/node/node_modules $build_dir/
 
   status "Pruning cached dependencies not specified in package.json"
-  npm prune 2>&1 | indent
+  npm prune --production 2>&1 | indent
 
   if test -f $cache_dir/node/.paasprovider/node-version && [ $(cat $cache_dir/node/.paasprovider/node-version) != "$node_version" ]; then
     status "Node version changed since last build; rebuilding dependencies"
